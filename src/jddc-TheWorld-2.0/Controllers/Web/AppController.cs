@@ -1,0 +1,17 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+
+namespace jddc_TheWorld_2._0.Controllers.Web
+{
+    public class AppController : Controller
+    {
+        public IActionResult Index()
+        {
+        return View();
+        }
+    }
+}
