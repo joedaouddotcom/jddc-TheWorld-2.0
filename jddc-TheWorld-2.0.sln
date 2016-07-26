@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{ED4A5E6C-4D67-4F02-BC59-8453EBEAC204}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{893D8EB0-847B-48B4-BA55-937EA1DBE46E}"
+	ProjectSection(SolutionItems) = preProject
+		global.json = global.json
+	EndProjectSection
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "jddc-TheWorld-2.0", "src\jddc-TheWorld-2.0\jddc-TheWorld-2.0.xproj", "{1B35485D-F136-4A2D-9FB1-C985C9407C86}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1B35485D-F136-4A2D-9FB1-C985C9407C86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B35485D-F136-4A2D-9FB1-C985C9407C86}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B35485D-F136-4A2D-9FB1-C985C9407C86}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B35485D-F136-4A2D-9FB1-C985C9407C86}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1B35485D-F136-4A2D-9FB1-C985C9407C86} = {ED4A5E6C-4D67-4F02-BC59-8453EBEAC204}
+	EndGlobalSection
+EndGlobal
