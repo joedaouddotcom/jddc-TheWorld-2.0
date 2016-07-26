@@ -11,7 +11,17 @@ namespace jddc_TheWorld_2._0.Controllers.Web
     {
         public IActionResult Index()
         {
-        return View();
+            return View();
+        }
+
+        public IActionResult Contact()
+        {
+            return View();
+        }
+
+        public IActionResult About()
+        {
+            return View();
         }
     }
 }
