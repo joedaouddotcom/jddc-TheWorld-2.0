@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using jddc_TheWorld_2._0.Services;
 using Microsoft.Extensions.Configuration;
+using jddc_TheWorld_2._0.Models;
 
 namespace jddc_TheWorld_2._0
 {
@@ -43,8 +44,11 @@ namespace jddc_TheWorld_2._0
             {
                 // Implement a real Mail Service
             }
-      
+
+            services.AddDbContext<WorldContext>();
+
             services.AddMvc();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
