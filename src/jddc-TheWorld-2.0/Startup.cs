@@ -73,6 +73,7 @@ namespace jddc_TheWorld_2._0
             Mapper.Initialize(config =>
             {
                 config.CreateMap<TripViewModel, Trip>().ReverseMap();
+                config.CreateMap<StopViewModel, Stop>().ReverseMap();
             });
 
             if (env.IsEnvironment("Development"))
