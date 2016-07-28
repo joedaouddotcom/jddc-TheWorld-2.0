@@ -9,6 +9,7 @@ using jddc_TheWorld_2._0.Services;
 using Microsoft.Extensions.Configuration;
 using jddc_TheWorld_2._0.Models;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
 
 namespace jddc_TheWorld_2._0.Controllers.Web
 {
@@ -31,17 +32,16 @@ namespace jddc_TheWorld_2._0.Controllers.Web
 
         public IActionResult Index()
         {
-            try
-            {
-                var data = _repository.GetAllTrips();
+            
+            return View();
+            
+        }
 
-                return View(data);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Failed to get trips in Index page: {ex.Message}");
-                return Redirect("/error");
-            }
+        [Authorize]
+        public IActionResult Trips()
+        {
+             var trips = _repository.GetAllTrips();
+             return View(trips);
         }
 
         public IActionResult Contact()
