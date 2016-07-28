@@ -1,4 +1,6 @@
-﻿using jddc_TheWorld_2._0.Models;
+﻿using AutoMapper;
+using jddc_TheWorld_2._0.Models;
+using jddc_TheWorld_2._0.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -22,15 +24,30 @@ namespace jddc_TheWorld_2._0.Controllers.Api
         [HttpGet("")]
         public IActionResult Get()
         {
-            return Ok(_repository.GetAllTrips());
+            try
+            {
+                var results = _repository.GetAllTrips();
+
+                return Ok(Mapper.Map<IEnumerable<TripViewModel>>(results));
+            }
+            catch (Exception ex)
+            {
+                // TODO Logging
+
+                return BadRequest("Error Occurred");
+            }
+
         }
 
         [HttpPost("")]
-        public IActionResult Post([FromBody]ViewModels.TripViewModel theTrip)
+        public IActionResult Post([FromBody]TripViewModel theTrip)
         {
             if (ModelState.IsValid)
             {
-                return Created($"api/trips/{theTrip.Name}", theTrip);
+                // Save to the Database
+                var newTrip = Mapper.Map<Trip>(theTrip);
+
+                return Created($"api/trips/{theTrip.Name}", Mapper.Map<TripViewModel>(newTrip));
             }
 
             return BadRequest(ModelState);

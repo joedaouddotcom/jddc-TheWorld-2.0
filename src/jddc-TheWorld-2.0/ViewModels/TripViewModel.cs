@@ -12,6 +12,6 @@ namespace jddc_TheWorld_2._0.ViewModels
         [Required]
         [StringLength(100, MinimumLength =5)]
         public string Name { get; set; }
-        public DateTime Created { get; set; } = DateTime.UtcNow;
+        public DateTime DateCreated { get; set; } = DateTime.UtcNow;
     }
 }

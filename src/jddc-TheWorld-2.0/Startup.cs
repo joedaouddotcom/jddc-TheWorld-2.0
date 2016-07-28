@@ -11,6 +11,8 @@ using jddc_TheWorld_2._0.Services;
 using Microsoft.Extensions.Configuration;
 using jddc_TheWorld_2._0.Models;
 using Newtonsoft.Json.Serialization;
+using AutoMapper;
+using jddc_TheWorld_2._0.ViewModels;
 
 namespace jddc_TheWorld_2._0
 {
@@ -63,8 +65,16 @@ namespace jddc_TheWorld_2._0
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, WorldContextSeedData seeder, ILoggerFactory factory)
+        public void Configure(IApplicationBuilder app, 
+            IHostingEnvironment env, 
+            WorldContextSeedData seeder, 
+            ILoggerFactory factory)
         {
+            Mapper.Initialize(config =>
+            {
+                config.CreateMap<TripViewModel, Trip>().ReverseMap();
+            });
+
             if (env.IsEnvironment("Development"))
             {
                 app.UseDeveloperExceptionPage();
