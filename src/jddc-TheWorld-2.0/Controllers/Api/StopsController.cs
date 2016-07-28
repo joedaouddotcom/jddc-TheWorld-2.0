@@ -40,16 +40,29 @@ namespace jddc_TheWorld_2._0.Controllers.Api
         }
 
         [HttpPost("")]
-        public IActionResult Post(string tripName, [FromBody]StopViewModel vm)
+        public async Task<IActionResult> Post(string tripName, [FromBody]StopViewModel vm)
         {
             try
             {
                 // If the VM is valid
+                if (ModelState.IsValid)
+                {
+                    var newStop = Mapper.Map<Stop>(vm);
 
-                // Lookup the Geocodes
+                    // Lookup the Geocodes
 
-                // Save to the Database
+                    // Save to the Database
 
+                    _repository.AddStop(tripName, newStop);
+
+                    if(await _repository.SaveChangesAsync())
+                    {
+                        return Created($"/api/trips/{tripName}/stops/{newStop.Name}",
+                        Mapper.Map<StopViewModel>(newStop));
+                    }
+
+                    
+                }
                 
             }
             catch (Exception ex)
