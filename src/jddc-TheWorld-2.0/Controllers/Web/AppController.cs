@@ -8,6 +8,7 @@ using jddc_TheWorld_2._0.ViewModels;
 using jddc_TheWorld_2._0.Services;
 using Microsoft.Extensions.Configuration;
 using jddc_TheWorld_2._0.Models;
+using Microsoft.Extensions.Logging;
 
 namespace jddc_TheWorld_2._0.Controllers.Web
 {
@@ -16,20 +17,31 @@ namespace jddc_TheWorld_2._0.Controllers.Web
         private IMailService _mailService;
         private IConfigurationRoot _config;
         private WorldContext _context;
+        private IWorldRepository _repository;
+        private ILogger<AppController> _logger;
 
-        public AppController(IMailService mailService, IConfigurationRoot config, WorldContext context)
+        public AppController(IMailService mailService, IConfigurationRoot config, IWorldRepository repository, ILogger<AppController> logger)
         {
             _mailService = mailService;
             _config = config;
-            _context = context;
+            _repository = repository;
+            _logger = logger;
         }
 
 
         public IActionResult Index()
         {
-            var data = _context.Trips.ToList();
+            try
+            {
+                var data = _repository.GetAllTrips();
 
-            return View();
+                return View(data);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Failed to get trips in Index page: {ex.Message}");
+                return Redirect("/error");
+            }
         }
 
         public IActionResult Contact()
