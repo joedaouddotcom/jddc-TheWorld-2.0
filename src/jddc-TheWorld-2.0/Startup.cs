@@ -13,6 +13,7 @@ using jddc_TheWorld_2._0.Models;
 using Newtonsoft.Json.Serialization;
 using AutoMapper;
 using jddc_TheWorld_2._0.ViewModels;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace jddc_TheWorld_2._0
 {
@@ -58,6 +59,14 @@ namespace jddc_TheWorld_2._0
 
             services.AddLogging();
 
+            services.AddIdentity<WorldUser, IdentityRole>(config =>
+            {
+                config.User.RequireUniqueEmail = true;
+                config.Password.RequiredLength = 8;
+                config.Cookies.ApplicationCookie.LoginPath = "/Auth/Login";
+            })
+            .AddEntityFrameworkStores<WorldContext>();
+
             services.AddMvc()
                 .AddJsonOptions(config =>
                 {
@@ -72,6 +81,10 @@ namespace jddc_TheWorld_2._0
             WorldContextSeedData seeder, 
             ILoggerFactory factory)
         {
+            app.UseStaticFiles();
+
+            app.UseIdentity();
+
             Mapper.Initialize(config =>
             {
                 config.CreateMap<TripViewModel, Trip>().ReverseMap();
@@ -88,7 +101,6 @@ namespace jddc_TheWorld_2._0
                 factory.AddDebug(LogLevel.Error);
             }
 
-            app.UseStaticFiles();
 
             app.UseMvc(config =>
             {

@@ -8,9 +8,10 @@ using jddc_TheWorld_2._0.Models;
 namespace jddcTheWorld2._0.Migrations
 {
     [DbContext(typeof(WorldContext))]
-    partial class WorldContextModelSnapshot : ModelSnapshot
+    [Migration("20160728223024_IdentityClasses")]
+    partial class IdentityClasses
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.0-rtm-21431")

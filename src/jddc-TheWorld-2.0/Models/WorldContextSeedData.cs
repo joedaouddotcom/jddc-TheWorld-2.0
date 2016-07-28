@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,21 +11,34 @@ namespace jddc_TheWorld_2._0.Models
     {
 
         private WorldContext _context;
+        private UserManager<WorldUser> _userManager;
 
-    public WorldContextSeedData(WorldContext context)
+        public WorldContextSeedData(WorldContext context, UserManager<WorldUser> userManager)
     {
             _context = context;
+            _userManager = userManager;
     }
 
         public async Task EnsureSeedData()
         {
+            if (await _userManager.FindByEmailAsync("joe@joedaoud.com") == null)
+            {
+                var user = new WorldUser()
+                {
+                    UserName = "joedaouddotcom",
+                    Email = "joe@joedaoud.com"
+                };
+
+                await _userManager.CreateAsync(user, "Westside!23");
+            }
+
             if (!_context.Trips.Any())
             {
                 var usTrip = new Trip()
                 {
                     DateCreated = DateTime.UtcNow,
                     Name = "US Trip",
-                    UserName = "", //TODO Add Username
+                    UserName = "joedaouddotcom",
                     Stops = new List<Stop>()
                     {
                         new Stop() {  Name = "Atlanta, GA", Arrival = new DateTime(2014, 6, 4), Latitude = 33.748995, Longitude = -84.387982, Order = 0 },
@@ -45,7 +59,7 @@ namespace jddc_TheWorld_2._0.Models
                 {
                     DateCreated = DateTime.UtcNow,
                     Name = "WorldTrip",
-                    UserName = "", //TODO Add Username
+                    UserName = "joedaouddotcom",
                     Stops = new List<Stop>()
                     {
                         new Stop() { Order = 0, Latitude =  33.748995, Longitude =  -84.387982, Name = "Atlanta, Georgia", Arrival = DateTime.Parse("Jun 3, 2014") },
