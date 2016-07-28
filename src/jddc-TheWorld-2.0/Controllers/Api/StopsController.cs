@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using jddc_TheWorld_2._0.Models;
+using jddc_TheWorld_2._0.Services;
 using jddc_TheWorld_2._0.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -14,13 +15,15 @@ namespace jddc_TheWorld_2._0.Controllers.Api
     [Route("/api/trips/{tripName}/stops")]
     public class StopsController : Controller
     {
+        private GeoCoordsService _coordsService;
         private ILogger<StopsController> _logger;
         private IWorldRepository _repository;
 
-        public StopsController(IWorldRepository repository, ILogger<StopsController> logger)
+        public StopsController(IWorldRepository repository, ILogger<StopsController> logger, GeoCoordsService coordsService)
         {
             _repository = repository;
             _logger = logger;
+            _coordsService = coordsService;
         }
 
         [HttpGet("")]
@@ -51,16 +54,26 @@ namespace jddc_TheWorld_2._0.Controllers.Api
 
                     // Lookup the Geocodes
 
-                    // Save to the Database
-
-                    _repository.AddStop(tripName, newStop);
-
-                    if(await _repository.SaveChangesAsync())
+                    var result = await _coordsService.GetCoordsAsync(newStop.Name);
+                    if (!result.Success)
                     {
-                        return Created($"/api/trips/{tripName}/stops/{newStop.Name}",
-                        Mapper.Map<StopViewModel>(newStop));
+                        _logger.LogError(result.Message);
                     }
+                    else
+                    {
+                        newStop.Latitude = result.Latitude;
+                        newStop.Longitude = result.Longitude;
+                           
+                        // Save to the Database
 
+                        _repository.AddStop(tripName, newStop);
+
+                        if (await _repository.SaveChangesAsync())
+                        {
+                            return Created($"/api/trips/{tripName}/stops/{newStop.Name}",
+                            Mapper.Map<StopViewModel>(newStop));
+                        }
+                    }
                     
                 }
                 
