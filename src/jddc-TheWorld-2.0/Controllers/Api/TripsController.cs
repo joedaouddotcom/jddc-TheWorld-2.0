@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using jddc_TheWorld_2._0.Models;
 using jddc_TheWorld_2._0.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -12,6 +13,7 @@ using System.Threading.Tasks;
 namespace jddc_TheWorld_2._0.Controllers.Api
 {
     [Route("api/trips")]
+    [Authorize]
     public class TripsController :Controller
     {
         private ILogger<TripsController> _logger;
