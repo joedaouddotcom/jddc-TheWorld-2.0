@@ -11,7 +11,20 @@
         
         var vm = this;
 
-        vm.name = "Joe";
+        vm.trips = [{
+            name: "US Trip",
+            created: new Date()
+        }, {
+            name: "World Trip",
+            created: new Date()
+        }];
+
+        vm.newTrip = {};
+
+        vm.addTrip = function () {
+            vm.trips.push({ name: vm.newTrip.name, created: new Date() });
+            vm.newTrip = {};
+        };
 
     }
 
