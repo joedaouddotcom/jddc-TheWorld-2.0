@@ -2,16 +2,19 @@
 using jddc_TheWorld_2._0.Models;
 using jddc_TheWorld_2._0.Services;
 using jddc_TheWorld_2._0.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace jddc_TheWorld_2._0.Controllers.Api
 {
+    [Authorize]
     [Route("/api/trips/{tripName}/stops")]
     public class StopsController : Controller
     {
@@ -19,7 +22,9 @@ namespace jddc_TheWorld_2._0.Controllers.Api
         private ILogger<StopsController> _logger;
         private IWorldRepository _repository;
 
-        public StopsController(IWorldRepository repository, ILogger<StopsController> logger, GeoCoordsService coordsService)
+        public StopsController(IWorldRepository repository, 
+            ILogger<StopsController> logger, 
+            GeoCoordsService coordsService)
         {
             _repository = repository;
             _logger = logger;
@@ -27,19 +32,27 @@ namespace jddc_TheWorld_2._0.Controllers.Api
         }
 
         [HttpGet("")]
-        public IActionResult Get(string tripName)
+        public JsonResult Get(string tripName)
         {
             try
             {
-                var trip = _repository.GetTripByName(tripName);
-                return Ok(Mapper.Map<IEnumerable<StopViewModel>>(trip.Stops.OrderBy(s => s.Order).ToList()));
+                var results = _repository.GetTripByName(tripName, User.Identity.Name);
+
+                if (results == null)
+                {
+                    return Json(null);
+                }
+
+                //return Ok(Mapper.Map<IEnumerable<StopViewModel>>(trip.Stops.OrderBy(s => s.Order).ToList()));
+                return Json(Mapper.Map<IEnumerable<StopViewModel>>(results.Stops.OrderBy(s => s.Order)));
             }
             catch(Exception ex)
             {
                 _logger.LogError("Failed to get stops: {0}", ex);
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json("Error occurred finding trip name");
             }
 
-            return BadRequest("Failed to get stops");
         }
 
         [HttpPost("")]
@@ -54,24 +67,27 @@ namespace jddc_TheWorld_2._0.Controllers.Api
 
                     // Lookup the Geocodes
 
-                    var result = await _coordsService.GetCoordsAsync(newStop.Name);
-                    if (!result.Success)
+                    var coordResult = await _coordsService.GetCoordsAsync(newStop.Name);
+
+                    if (!coordResult.Success)
                     {
-                        _logger.LogError(result.Message);
+                        Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                        Json(coordResult.Message);
                     }
                     else
                     {
-                        newStop.Latitude = result.Latitude;
-                        newStop.Longitude = result.Longitude;
+                        newStop.Latitude = coordResult.Latitude;
+                        newStop.Longitude = coordResult.Longitude;
                            
                         // Save to the Database
 
-                        _repository.AddStop(tripName, newStop);
+                        _repository.AddStop(tripName, User.Identity.Name, newStop);
 
-                        if (await _repository.SaveChangesAsync())
+                        if (_repository.SaveAll())
                         {
-                            return Created($"/api/trips/{tripName}/stops/{newStop.Name}",
-                            Mapper.Map<StopViewModel>(newStop));
+                            Response.StatusCode = (int)HttpStatusCode.Created;
+                            //return Created($"/api/trips/{tripName}/stops/{newStop.Name}",
+                            return Json(Mapper.Map<StopViewModel>(newStop));
                         }
                     }
                     
@@ -81,9 +97,12 @@ namespace jddc_TheWorld_2._0.Controllers.Api
             catch (Exception ex)
             {
                 _logger.LogError("Failed to save new Stop: {0}", ex);
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json("Failed to save new stop!");
             }
 
-            return BadRequest("Failed to save new stop!");
+            Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            return Json("Validation failed to save new stop!");
         }
     }
 }

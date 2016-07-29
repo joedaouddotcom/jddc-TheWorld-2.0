@@ -6,12 +6,14 @@ namespace jddc_TheWorld_2._0.Models
     public interface IWorldRepository
     {
         IEnumerable<Trip> GetAllTrips();
-        Trip GetTripByName(string tripName);
-
+        IEnumerable<Trip> GetAllTripsWithStops();
         void AddTrip(Trip trip);
-        void AddStop(string tripName, Stop newStop);
+        bool SaveAll();
 
-        Task<bool> SaveChangesAsync();
-        
+        Trip GetTripByName(string tripName, string username);    
+        void AddStop(string tripName, string username, Stop newStop);
+
+        //Task<bool> SaveChangesAsync();
+        IEnumerable<Trip> GetUserTripsWithStops(string name);
     }
 }

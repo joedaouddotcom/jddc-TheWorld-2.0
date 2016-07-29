@@ -7,13 +7,14 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace jddc_TheWorld_2._0.Controllers.Api
 {
-    [Route("api/trips")]
     [Authorize]
+    [Route("api/trips")]
     public class TripsController :Controller
     {
         private ILogger<TripsController> _logger;
@@ -27,40 +28,57 @@ namespace jddc_TheWorld_2._0.Controllers.Api
         }
 
         [HttpGet("")]
-        public IActionResult Get()
+        public JsonResult Get()
         {
-            try
-            {
-                var results = _repository.GetAllTrips();
+            //try
+            //{
+                var trips = _repository.GetUserTripsWithStops(User.Identity.Name);
+                var results = Mapper.Map<IEnumerable<TripViewModel>> (trips);
 
-                return Ok(Mapper.Map<IEnumerable<TripViewModel>>(results));
-            }
-            catch (Exception ex)
-            {
-                // TODO Logging
-                _logger.LogError($"Failed to get All Trips: {ex}");
-                return BadRequest("Error Occurred");
-            }
+                return Json(results);
+            //}
+            //catch (Exception ex)
+            //{
+            //    // TODO Logging
+            //    _logger.LogError($"Failed to get All Trips: {ex}");
+            //    return BadRequest("Error Occurred");
+            //}
 
         }
 
         [HttpPost("")]
-        public async Task<IActionResult> Post([FromBody]TripViewModel theTrip)
+        public JsonResult Post([FromBody]TripViewModel vm)
         {
-            if (ModelState.IsValid)
+            try
             {
-                // Save to the Database
-                var newTrip = Mapper.Map<Trip>(theTrip);
-                _repository.AddTrip(newTrip);
-
-                if (await _repository.SaveChangesAsync())
+                if (ModelState.IsValid)
                 {
-                    return Created($"api/trips/{theTrip.Name}", Mapper.Map<TripViewModel>(newTrip));
-                }
+                                   
+                      
+                    var newTrip = Mapper.Map<Trip>(vm);
+                    newTrip.UserName = User.Identity.Name;
 
+                    // Save to the Database
+                    _logger.LogInformation("Attempting to save a new trip...");
+                    _repository.AddTrip(newTrip);
+                    
+                    if (_repository.SaveAll())
+                    {
+                        Response.StatusCode = (int)HttpStatusCode.Created;
+                        return Json(Mapper.Map<TripViewModel>(newTrip));
+                        //return Created($"api/trips/{theTrip.Name}", Mapper.Map<TripViewModel>(newTrip));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Failed to save new trip!", ex);
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json(new { Message = ex.Message });
             }
 
-            return BadRequest("Failed to save the trip!");
+            Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            return Json(new { Message = "Failed", ModelState = ModelState });
             
         }
     }

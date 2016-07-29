@@ -19,15 +19,18 @@ namespace jddc_TheWorld_2._0.Models
             _logger = logger;
     }
 
-        public void AddStop(string tripName, Stop newStop)
+        public void AddStop(string tripName, string username, Stop newStop)
         {
-            var trip = GetTripByName(tripName);
+            var theTrip = GetTripByName(tripName, username);
+            newStop.Order = theTrip.Stops.Max(s => s.Order) + 1;
+            theTrip.Stops.Add(newStop);
+            _context.Stops.Add(newStop);
 
-            if(trip != null)
-            {
-                trip.Stops.Add(newStop);
-                _context.Stops.Add(newStop);
-            }
+            //if(theTrip != null)
+            //{
+            //    theTrip.Stops.Add(newStop);
+            //    _context.Stops.Add(newStop);
+            //}
         }
 
         public void AddTrip(Trip trip)
@@ -38,22 +41,60 @@ namespace jddc_TheWorld_2._0.Models
 
         public IEnumerable<Trip> GetAllTrips()
         {
-            _logger.LogInformation("Getting All Trips from the Database");
-            return _context.Trips.ToList();
+            try
+            {
+                return _context.Trips.OrderBy(t => t.Name).ToList();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Could not get trips from the database!", ex);
+                return null;
+            }
         }
 
-        public Trip GetTripByName(string tripName)
+        public IEnumerable<Trip> GetAllTripsWithStops()
         {
-            return _context.Trips
+            try
+            {
+                return _context.Trips
                 .Include(t => t.Stops)
-                .Where(t => t.Name == tripName)
-                .FirstOrDefault();
+                .OrderBy(t => t.Name)
+                .ToList();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Could not get trips with stops from database", ex);
+                return null;
+            }
         }
 
-        public async Task<bool> SaveChangesAsync()
+        public Trip GetTripByName(string tripName, string username)
         {
-            return (await _context.SaveChangesAsync()) > 0;
+            return _context.Trips.Include(t => t.Stops)
+                                 .Where(t => t.Name == tripName && t.UserName == username)
+                                 .FirstOrDefault();
         }
 
+        public IEnumerable<Trip> GetUserTripsWithStops(string name)
+        {
+            try
+            {
+                return _context.Trips
+                .Include(t => t.Stops)
+                .OrderBy(t => t.Name)
+                .Where(t => t.UserName == name)
+                .ToList();
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError("Could not get trips with stops from database", ex);
+                    return null;
+            }
+        }
+
+        public bool SaveAll()
+        {
+            return _context.SaveChanges() > 0;
+        }
     }
 }
