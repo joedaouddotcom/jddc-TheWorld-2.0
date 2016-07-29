@@ -14,6 +14,7 @@ using Newtonsoft.Json.Serialization;
 using AutoMapper;
 using jddc_TheWorld_2._0.ViewModels;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 
 namespace jddc_TheWorld_2._0
 {
@@ -67,8 +68,15 @@ namespace jddc_TheWorld_2._0
             })
             .AddEntityFrameworkStores<WorldContext>();
 
-            services.AddMvc()
-                .AddJsonOptions(config =>
+            services.AddMvc(config =>
+            {
+                if (_env.IsProduction())
+                {
+                    config.Filters.Add(new RequireHttpsAttribute());
+                }
+                
+            })
+            .AddJsonOptions(config =>
                 {
                     config.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
 

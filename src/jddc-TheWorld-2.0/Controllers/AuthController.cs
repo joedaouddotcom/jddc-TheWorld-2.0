@@ -55,5 +55,13 @@ namespace jddc_TheWorld_2._0.Controllers
             return View();
         }
             
+        public async Task<ActionResult> Logout()
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                await _signInManager.SignOutAsync();
+            }
+            return RedirectToAction("Index", "App");
+        }
     }
 }
