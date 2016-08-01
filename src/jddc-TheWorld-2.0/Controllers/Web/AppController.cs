@@ -40,8 +40,7 @@ namespace jddc_TheWorld_2._0.Controllers.Web
         [Authorize]
         public IActionResult Trips()
         {
-             var trips = _repository.GetAllTrips();
-             return View(trips);
+             return View();
         }
 
         public IActionResult Contact()
