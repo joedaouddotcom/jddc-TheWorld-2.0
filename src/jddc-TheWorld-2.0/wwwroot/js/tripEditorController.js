@@ -8,11 +8,12 @@
     
     function tripEditorController($routeParams, $http) {
         var vm = this;
+
         vm.tripName = $routeParams.tripName;
         vm.stops = [];
         vm.errorMessage = "";
         vm.isBusy = true;
-        vm.newStop = [];
+        vm.newStop = {};
 
         var url = "/api/trips/" + vm.tripName + "/stops";
 

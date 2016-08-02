@@ -19,14 +19,15 @@ namespace jddc_TheWorld_2._0.Models
             _userManager = userManager;
     }
 
-        public async Task EnsureSeedData()
+        public async Task EnsureSeedDataAsync()
         {
             if (await _userManager.FindByEmailAsync("joe@joedaoud.com") == null)
             {
                 var user = new WorldUser()
                 {
                     UserName = "joedaouddotcom",
-                    Email = "joe@joedaoud.com"
+                    Email = "joe@joedaoud.com",
+                    FirstTrip = DateTime.UtcNow
                 };
 
                 await _userManager.CreateAsync(user, "Westside!23");
@@ -36,8 +37,8 @@ namespace jddc_TheWorld_2._0.Models
             {
                 var usTrip = new Trip()
                 {
-                    DateCreated = DateTime.UtcNow,
                     Name = "US Trip",
+                    DateCreated = DateTime.UtcNow,
                     UserName = "joedaouddotcom",
                     Stops = new List<Stop>()
                     {
@@ -52,13 +53,12 @@ namespace jddc_TheWorld_2._0.Models
                 };
 
                 _context.Trips.Add(usTrip);
-
                 _context.Stops.AddRange(usTrip.Stops);
 
                 var worldTrip = new Trip()
                 {
-                    DateCreated = DateTime.UtcNow,
                     Name = "WorldTrip",
+                    DateCreated = DateTime.UtcNow,
                     UserName = "joedaouddotcom",
                     Stops = new List<Stop>()
                     {
@@ -122,11 +122,9 @@ namespace jddc_TheWorld_2._0.Models
                 };
 
                 _context.Trips.Add(worldTrip);
-
                 _context.Stops.AddRange(worldTrip.Stops);
 
-
-                await _context.SaveChangesAsync();
+                _context.SaveChangesAsync();
             }
         }
 

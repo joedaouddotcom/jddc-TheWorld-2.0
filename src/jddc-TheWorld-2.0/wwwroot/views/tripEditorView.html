@@ -17,14 +17,15 @@
             </div>
             <div class="form-group">
                 <label>Location</label>
+                
                 <input class="form-control" id="name" name="name" ng-model="vm.newStop.name" required ng-minlength="5" />
                 <span class="text-danger" ng-show="newStopForm.name.$error.required">Required</span>
                 <span class="text-danger" ng-show="newStopForm.name.$error.minlength">Must be at least 5 characters.</span>
             </div>
-            <div><input type="submit" value="Add" class="btn btn-success" ng-disabled="newStopForm.$invalid" /></div>
+            <div><input type="submit" id="addButton" value="Add" class="btn btn-success" ng-disabled="newStopForm.$invalid" /></div>
         </form>
 
-        <table class="table table-responsive table-striped">
+        <table id="tripTable" class="table table-responsive table-striped">
             <tr>
                 <th>Location</th>
                 <th>Arrival</th>

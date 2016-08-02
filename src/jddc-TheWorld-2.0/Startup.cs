@@ -136,7 +136,7 @@ namespace jddc_TheWorld_2._0
                     );
             });
 
-            seeder.EnsureSeedData().Wait();
+            seeder.EnsureSeedDataAsync().Wait();
         }
     }
 }
